@@ -1,16 +1,16 @@
-# redMine - project management software
-# Copyright (C) 2006-2007  Jean-Philippe Lang
+# Redmine - project management software
+# Copyright (C) 2006-2012  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -20,26 +20,39 @@ require 'redmine/scm/adapters/subversion_adapter'
 class Repository::Subversion < Repository
   attr_protected :root_url
   validates_presence_of :url
-  validates_format_of :url, :with => /^(http|https|svn(\+[^\s:\/\\]+)?|file):\/\/.+/i
+  validates_format_of :url, :with => /\A(http|https|svn(\+[^\s:\/\\]+)?|file):\/\/.+/i
 
-  def scm_adapter
+  def self.scm_adapter_class
     Redmine::Scm::Adapters::SubversionAdapter
   end
-  
+
   def self.scm_name
     'Subversion'
   end
 
+  def supports_directory_revisions?
+    true
+  end
+
+  def repo_log_encoding
+    'UTF-8'
+  end
+
   def latest_changesets(path, rev, limit=10)
     revisions = scm.revisions(path, rev, nil, :limit => limit)
-    revisions ? changesets.find_all_by_revision(revisions.collect(&:identifier), :order => "committed_on DESC", :include => :user) : []
+    if revisions
+      identifiers = revisions.collect(&:identifier).compact
+      changesets.where(:revision => identifiers).reorder("committed_on DESC").includes(:repository, :user).all
+    else
+      []
+    end
   end
-  
+
   # Returns a path relative to the url of the repository
   def relative_path(path)
     path.gsub(Regexp.new("^\/?#{Regexp.escape(relative_url)}"), '')
   end
-  
+
   def fetch_changesets
     scm_info = scm.info
     if scm_info
@@ -56,12 +69,12 @@ class Repository::Subversion < Repository
           revisions = scm.revisions('', identifier_to, identifier_from, :with_paths => true)
           revisions.reverse_each do |revision|
             transaction do
-              changeset = Changeset.create(:repository => self,
-                                           :revision => revision.identifier, 
-                                           :committer => revision.author, 
+              changeset = Changeset.create(:repository   => self,
+                                           :revision     => revision.identifier,
+                                           :committer    => revision.author,
                                            :committed_on => revision.time,
-                                           :comments => revision.message)
-              
+                                           :comments     => revision.message)
+
               revision.paths.each do |change|
                 changeset.create_change(change)
               end unless changeset.new_record?
@@ -72,9 +85,27 @@ class Repository::Subversion < Repository
       end
     end
   end
-  
+
+  protected
+
+  def load_entries_changesets(entries)
+    return unless entries
+
+    entries_with_identifier = entries.select {|entry| entry.lastrev && entry.lastrev.identifier.present?}
+    identifiers = entries_with_identifier.map {|entry| entry.lastrev.identifier}.compact.uniq
+
+    if identifiers.any?
+      changesets_by_identifier = changesets.where(:revision => identifiers).includes(:user, :repository).all.group_by(&:revision)
+      entries_with_identifier.each do |entry|
+        if m = changesets_by_identifier[entry.lastrev.identifier]
+          entry.changeset = m.first
+        end
+      end
+    end
+  end
+
   private
-  
+
   # Returns the relative url of the repository
   # Eg: root_url = file:///var/svn/foo
   #     url      = file:///var/svn/foo/bar

@@ -3,10 +3,12 @@ roles_001:
   name: Manager
   id: 1
   builtin: 0
+  issues_visibility: all
   permissions: |
     --- 
     - :add_project
     - :edit_project
+    - :close_project
     - :select_project_modules
     - :manage_members
     - :manage_versions
@@ -21,6 +23,9 @@ roles_001:
     - :delete_issues
     - :view_issue_watchers
     - :add_issue_watchers
+    - :set_issues_private
+    - :set_notes_private
+    - :view_private_notes
     - :delete_issue_watchers
     - :manage_public_queries
     - :save_queries
@@ -51,6 +56,7 @@ roles_001:
     - :browse_repository
     - :manage_repository
     - :view_changesets
+    - :manage_related_issues
     - :manage_project_activities
 
   position: 1
@@ -58,6 +64,7 @@ roles_002:
   name: Developer
   id: 2
   builtin: 0
+  issues_visibility: default
   permissions: |
     --- 
     - :edit_project
@@ -102,6 +109,7 @@ roles_003:
   name: Reporter
   id: 3
   builtin: 0
+  issues_visibility: default
   permissions: |
     --- 
     - :edit_project
@@ -140,6 +148,7 @@ roles_004:
   name: Non member
   id: 4
   builtin: 1
+  issues_visibility: default
   permissions: |
     --- 
     - :view_issues
@@ -147,7 +156,6 @@ roles_004:
     - :edit_issues
     - :manage_issue_relations
     - :add_issue_notes
-    - :move_issues
     - :save_queries
     - :view_gantt
     - :view_calendar
@@ -170,6 +178,7 @@ roles_005:
   name: Anonymous
   id: 5
   builtin: 2
+  issues_visibility: default
   permissions: |
     --- 
     - :view_issues

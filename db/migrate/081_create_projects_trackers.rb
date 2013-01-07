@@ -5,10 +5,10 @@ class CreateProjectsTrackers < ActiveRecord::Migration
       t.column :tracker_id, :integer, :default => 0, :null => false
     end
     add_index :projects_trackers, :project_id, :name => :projects_trackers_project_id
-    
+
     # Associates all trackers to all projects (as it was before)
-    tracker_ids = Tracker.find(:all).collect(&:id)
-    Project.find(:all).each do |project|
+    tracker_ids = Tracker.all.collect(&:id)
+    Project.all.each do |project|
       project.tracker_ids = tracker_ids
     end
   end

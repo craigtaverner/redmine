@@ -1,87 +1,96 @@
-# redMine - project management software
-# Copyright (C) 2006  Jean-Philippe Lang
+# Redmine - project management software
+# Copyright (C) 2006-2012  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class AuthSourcesController < ApplicationController
   layout 'admin'
-  
-  before_filter :require_admin
+  menu_item :ldap_authentication
 
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :destroy, :create, :update ],
-         :redirect_to => { :template => :index }
+  before_filter :require_admin
+  before_filter :find_auth_source, :only => [:edit, :update, :test_connection, :destroy]
 
   def index
-    @auth_source_pages, @auth_sources = paginate auth_source_class.name.tableize, :per_page => 10
-    render "auth_sources/index"
+    @auth_source_pages, @auth_sources = paginate AuthSource, :per_page => 25
   end
 
   def new
-    @auth_source = auth_source_class.new
-    render 'auth_sources/new'
+    klass_name = params[:type] || 'AuthSourceLdap'
+    @auth_source = AuthSource.new_subclass_instance(klass_name, params[:auth_source])
+    render_404 unless @auth_source
   end
 
   def create
-    @auth_source = auth_source_class.new(params[:auth_source])
+    @auth_source = AuthSource.new_subclass_instance(params[:type], params[:auth_source])
     if @auth_source.save
       flash[:notice] = l(:notice_successful_create)
-      redirect_to :action => 'index'
+      redirect_to auth_sources_path
     else
-      render 'auth_sources/new'
+      render :action => 'new'
     end
   end
 
   def edit
-    @auth_source = AuthSource.find(params[:id])
-    render 'auth_sources/edit'
   end
 
   def update
-    @auth_source = AuthSource.find(params[:id])
     if @auth_source.update_attributes(params[:auth_source])
       flash[:notice] = l(:notice_successful_update)
-      redirect_to :action => 'index'
+      redirect_to auth_sources_path
     else
-      render 'auth_sources/edit'
+      render :action => 'edit'
     end
   end
-  
+
   def test_connection
-    @auth_method = AuthSource.find(params[:id])
     begin
-      @auth_method.test_connection
+      @auth_source.test_connection
       flash[:notice] = l(:notice_successful_connection)
-    rescue => text
-      flash[:error] = l(:error_unable_to_connect, text.message)
+    rescue Exception => e
+      flash[:error] = l(:error_unable_to_connect, e.message)
     end
-    redirect_to :action => 'index'
+    redirect_to auth_sources_path
   end
 
   def destroy
-    @auth_source = AuthSource.find(params[:id])
-    unless @auth_source.users.find(:first)
+    unless @auth_source.users.exists?
       @auth_source.destroy
       flash[:notice] = l(:notice_successful_delete)
     end
-    redirect_to :action => 'index'
+    redirect_to auth_sources_path
   end
 
-  protected
+  def autocomplete_for_new_user
+    results = AuthSource.search(params[:term])
 
-  def auth_source_class
-    AuthSource
+    render :json => results.map {|result| {
+      'value' => result[:login],
+      'label' => "#{result[:login]} (#{result[:firstname]} #{result[:lastname]})",
+      'login' => result[:login].to_s,
+      'firstname' => result[:firstname].to_s,
+      'lastname' => result[:lastname].to_s,
+      'mail' => result[:mail].to_s,
+      'auth_source_id' => result[:auth_source_id].to_s
+    }}
+  end
+
+  private
+
+  def find_auth_source
+    @auth_source = AuthSource.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
   end
 end

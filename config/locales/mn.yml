@@ -1,5 +1,7 @@
 mn:
   direction: ltr
+  jquery:
+    locale: "en"
   date:
     formats:
       # Use the strftime parameters for formats.
@@ -8,15 +10,18 @@ mn:
       default: "%Y/%m/%d"
       short: "%b %d"
       long: "%Y, %B %d"
-      
+
     day_names: [Даваа, Мягмар, Лхагва, Пүрэв, Баасан, Бямба, Ням]
     abbr_day_names: [Дав, Мяг, Лха, Пүр, Бсн, Бям, Ням]
-      
+
     # Don't forget the nil at the beginning; there's no such thing as a 0th month
     month_names: [~, 1-р сар, 2-р сар, 3-р сар, 4-р сар, 5-р сар, 6-р сар, 7-р сар, 8-р сар, 9-р сар, 10-р сар, 11-р сар, 12-р сар]
     abbr_month_names: [~, 1сар, 2сар, 3сар, 4сар, 5сар, 6сар, 7сар, 8сар, 9сар, 10сар, 11сар, 12сар]
     # Used in date_select and datime_select.
-    order: [ :day, :month, :year ]
+    order:
+      - :day
+      - :month
+      - :year
 
   time:
     formats:
@@ -26,7 +31,7 @@ mn:
       long: "%Y, %B %d %H:%M"
     am: "am"
     pm: "pm"
-      
+
   datetime:
     distance_in_words:
       half_a_minute: "хагас минут"
@@ -45,6 +50,9 @@ mn:
       about_x_hours:
         one:   "1 цаг орчим"
         other: "ойролцоогоор %{count} цаг"
+      x_hours:
+        one:   "1 hour"
+        other: "%{count} hours"
       x_days:
         one:   "1 өдөр"
         other: "%{count} өдөр"
@@ -72,7 +80,7 @@ mn:
     human:
       format:
         delimiter: ""
-        precision: 1
+        precision: 3
       storage_units:
         format: "%n %u"
         units:
@@ -84,13 +92,12 @@ mn:
           gb: "GB"
           tb: "TB"
 
-        
 # Used in array.to_sentence.
   support:
     array:
       sentence_connector: "бас"
       skip_last_comma: false
-      
+
   activerecord:
     errors:
       template:
@@ -124,7 +131,7 @@ mn:
         cant_link_an_issue_with_a_descendant: "An issue can not be linked to one of its subtasks"
 
   actionview_instancetag_blank_option: Сонгоно уу
-  
+
   general_text_No: 'Үгүй'
   general_text_Yes: 'Тийм'
   general_text_no: 'үгүй'
@@ -135,7 +142,7 @@ mn:
   general_csv_encoding: UTF-8
   general_pdf_encoding: UTF-8
   general_first_day_of_week: '7'
-  
+
   notice_account_updated: Дансыг амжилттай өөрчиллөө.
   notice_account_invalid_creditentials: Хэрэглэгчийн нэр эсвэл нууц үг буруу байна
   notice_account_password_updated: Нууц үгийг амжилттай өөрчиллөө.
@@ -162,7 +169,7 @@ mn:
   notice_default_data_loaded: Стандарт тохиргоог амжилттай ачааллаа.
   notice_unable_delete_version: Хувилбарыг устгах боломжгүй.
   notice_issue_done_ratios_updated: Issue done ratios updated.
-  
+
   error_can_t_load_default_data: "Стандарт тохиргоог ачаалж чадсангүй: %{value}"
   error_scm_not_found: "Repository дотор тухайн бичлэг эсвэл хувилбарыг олсонгүй."
   error_scm_command_failed: "Repository-д хандахад алдаа гарлаа:  %{value}"
@@ -175,9 +182,9 @@ mn:
   error_issue_done_ratios_not_updated: "Issue done ratios not updated."
   error_workflow_copy_source: 'Please select a source tracker or role'
   error_workflow_copy_target: 'Please select target tracker(s) and role(s)'
-  
+
   warning_attachments_not_saved: "%{count} file(s) файлыг хадгалж чадсангүй."
-  
+
   mail_subject_lost_password: "Таны %{value} нууц үг"
   mail_body_lost_password: 'Нууц үгээ өөрчлөхийн тулд доорх холбоос дээр дарна уу:'
   mail_subject_register: "Таны %{value} дансыг идэвхжүүлэх"
@@ -192,10 +199,8 @@ mn:
   mail_body_wiki_content_added: "The '%{id}' wiki page has been added by %{author}."
   mail_subject_wiki_content_updated: "'%{id}' wiki page has been updated"
   mail_body_wiki_content_updated: "The '%{id}' wiki page has been updated by %{author}."
-  
-  gui_validation_error: 1 алдаа
-  gui_validation_error_plural: "%{count} алдаа"
-  
+
+
   field_name: Нэр
   field_description: Тайлбар
   field_summary: Дүгнэлт
@@ -257,7 +262,7 @@ mn:
   field_attr_mail: Имэйл аттрибут
   field_onthefly: Хүссэн үедээ хэрэглэгч үүсгэх
   field_start_date: Эхлэл
-  field_done_ratio: %% Гүйцэтгэсэн
+  field_done_ratio: "%% Гүйцэтгэсэн"
   field_auth_source: Нэвтрэх арга
   field_hide_mail: Миний имэйл хаягийг нуу
   field_comments: Тайлбар
@@ -286,7 +291,7 @@ mn:
   field_content: Агуулга
   field_group_by: Үр дүнгээр бүлэглэх
   field_sharing: Sharing
-  
+
   setting_app_title: Программын гарчиг
   setting_app_subtitle: Программын дэд гарчиг
   setting_welcome_text: Мэндчилгээ
@@ -312,8 +317,6 @@ mn:
   setting_time_format: Цагийн формат
   setting_cross_project_issue_relations: Төсөл хооронд асуудал хамааруулахыг зөвшөөрөх
   setting_issue_list_default_columns: Асуудлуудыг харуулах стандарт баганууд
-  setting_repositories_encodings: Репозиторийн энкодинг
-  setting_commit_logs_encoding: Коммит хийх үед харуулах текстүүдийн энкодинг
   setting_emails_footer: Имэйлүүдийн хөл хэсэг
   setting_protocol: Протокол
   setting_per_page_options: Нэг хуудсанд байх обьектуудын тохиргоо
@@ -340,7 +343,7 @@ mn:
   setting_start_of_week: Start calendars on
   setting_rest_api_enabled: Enable REST web service
   setting_cache_formatted_text: Cache formatted text
-  
+
   permission_add_project: Create project
   permission_add_subprojects: Create subprojects
   permission_edit_project: Төслийг засварлах
@@ -395,7 +398,7 @@ mn:
   permission_delete_messages: Зурвасуудыг устгах
   permission_delete_own_messages: Өөрийн зурвасуудыг устгах
   permission_export_wiki_pages: Вики хуудсуудыг экспорт хийх
-  
+
   project_module_issue_tracking: Асуудал хянах
   project_module_time_tracking: Хугацаа хянах
   project_module_news: Мэдээ мэдээллүүд
@@ -404,7 +407,7 @@ mn:
   project_module_wiki: Вики
   project_module_repository: Репозитори
   project_module_boards: Самбарууд
-  
+
   label_user: Хэрэглэгч
   label_user_plural: Хэрэглэгчид
   label_user_new: Шинэ хэрэглэгч
@@ -492,8 +495,6 @@ mn:
   label_text: Урт текст
   label_attribute: Аттрибут
   label_attribute_plural: Аттрибутууд
-  label_download: "%{count} Татаж авсан зүйл"
-  label_download_plural: "%{count} Татаж авсан зүйлс"
   label_no_data: Үзүүлэх өгөгдөл байхгүй байна
   label_change_status: Төлвийг өөрчлөх
   label_history: Түүх
@@ -503,14 +504,13 @@ mn:
   label_attachment_plural: Файлууд
   label_file_added: Файл нэмэгдлээ
   label_report: Тайлан
-  label_report_plural: Тайлангууд 
+  label_report_plural: Тайлангууд
   label_news: Мэдээ
   label_news_new: Шинэ мэдээ
   label_news_plural: Мэдээ
   label_news_latest: Сүүлийн үеийн мэдээнүүд
   label_news_view_all: Бүх мэдээг харах
   label_news_added: Мэдээ нэмэгдлээ
-  label_change_log: Өөрчлөлтийн лог
   label_settings: Тохиргоо
   label_overview: Эхлэл
   label_version: Хувилбар
@@ -597,10 +597,8 @@ mn:
   label_repository: Репозитори
   label_repository_plural: Репозиторууд
   label_browse: Үзэх
-  label_modification: "%{count} өөрчлөлт"
-  label_modification_plural: "%{count} өөрчлөлтүүд"
   label_branch: Салбар
-  label_tag: Шошго 
+  label_tag: Шошго
   label_revision: Хувилбар
   label_revision_plural: Хувилбарууд
   label_revision_id: "%{value} Хувилбар"
@@ -758,7 +756,7 @@ mn:
   label_api_access_key: API access key
   label_missing_api_access_key: Missing an API access key
   label_api_access_key_created_on: "API access key created %{value} ago"
-  
+
   button_login: Нэвтрэх
   button_submit: Илгээх
   button_save: Хадгалах
@@ -802,17 +800,17 @@ mn:
   button_quote: Ишлэл
   button_duplicate: Хуулбар
   button_show: Үзэх
-  
+
   status_active: идэвхтэй
   status_registered: бүртгүүлсэн
   status_locked: түгжээтэй
-  
+
   version_status_open: нээлттэй
   version_status_locked: түгжээтэй
   version_status_closed: хаалттай
 
   field_active: идэвхтэй
-  
+
   text_select_mail_notifications: Ямар үед имэйлээр мэдэгдэл илгээхийг сонгоно уу.
   text_regexp_info: eg. ^[A-Z0-9]+$
   text_min_max_length_info: 0 гэвэл ямар ч хязгааргүй гэсэн үг
@@ -827,7 +825,6 @@ mn:
   text_tip_issue_begin_day: энэ өдөр эхлэх ажил
   text_tip_issue_end_day: энэ өдөр дуусах ажил
   text_tip_issue_begin_end_day: энэ өдөр эхлээд мөн дуусч байгаа ажил
-  text_project_identifier_info: 'Зөвхөн жижиг үсгүүд болон (a-z), тоо and дундуур зураас ашиглаж болно.<br />Нэгэнт хадгалсан хойно, төслийн глобал нэрийг өөрлчөх боломжгүй.'
   text_caracters_maximum: "дээд тал нь %{count} үсэг."
   text_caracters_minimum: "Хамгийн багадаа ядаж %{count} тэмдэгт байх."
   text_length_between: "Урт нь багадаа %{min}, ихдээ %{max} тэмдэгт."
@@ -868,7 +865,7 @@ mn:
   text_wiki_page_destroy_children: "Delete child pages and all their descendants"
   text_wiki_page_reassign_children: "Reassign child pages to this parent page"
   text_own_membership_delete_confirmation: "You are about to remove some or all of your permissions and may no longer be able to edit this project after that.\nAre you sure you want to continue?"
-  
+
   default_role_manager: Менежер
   default_role_developer: Хөгжүүлэгч
   default_role_reporter: Мэдэгдэгч
@@ -891,7 +888,7 @@ mn:
   default_priority_immediate: Нэн даруй
   default_activity_design: Дизайн
   default_activity_development: Хөгжүүлэлт
-  
+
   enumeration_issue_priorities: Асуудлын зэрэглэлүүд
   enumeration_doc_categories: Бичиг баримтын ангиллууд
   enumeration_activities: Үйл ажиллагаанууд (хугацааг хянах)
@@ -918,7 +915,6 @@ mn:
   project_module_gantt: Gantt
   project_module_calendar: Calendar
   button_edit_associated_wikipage: "Edit associated Wiki page: %{page_title}"
-  text_are_you_sure_with_children: Delete issue and all child issues?
   field_text: Text field
   label_user_mail_option_only_owner: Only for things I am the owner of
   setting_default_notification_option: Default notification option
@@ -937,3 +933,147 @@ mn:
   setting_commit_logtime_enabled: Enable time logging
   notice_gantt_chart_truncated: The chart was truncated because it exceeds the maximum number of items that can be displayed (%{max})
   setting_gantt_items_limit: Maximum number of items displayed on the gantt chart
+  field_warn_on_leaving_unsaved: Warn me when leaving a page with unsaved text
+  text_warn_on_leaving_unsaved: The current page contains unsaved text that will be lost if you leave this page.
+  label_my_queries: My custom queries
+  text_journal_changed_no_detail: "%{label} updated"
+  label_news_comment_added: Comment added to a news
+  button_expand_all: Expand all
+  button_collapse_all: Collapse all
+  label_additional_workflow_transitions_for_assignee: Additional transitions allowed when the user is the assignee
+  label_additional_workflow_transitions_for_author: Additional transitions allowed when the user is the author
+  label_bulk_edit_selected_time_entries: Bulk edit selected time entries
+  text_time_entries_destroy_confirmation: Are you sure you want to delete the selected time entr(y/ies)?
+  label_role_anonymous: Anonymous
+  label_role_non_member: Non member
+  label_issue_note_added: Note added
+  label_issue_status_updated: Status updated
+  label_issue_priority_updated: Priority updated
+  label_issues_visibility_own: Issues created by or assigned to the user
+  field_issues_visibility: Issues visibility
+  label_issues_visibility_all: All issues
+  permission_set_own_issues_private: Set own issues public or private
+  field_is_private: Private
+  permission_set_issues_private: Set issues public or private
+  label_issues_visibility_public: All non private issues
+  text_issues_destroy_descendants_confirmation: This will also delete %{count} subtask(s).
+  field_commit_logs_encoding: Коммит хийх үед харуулах текстүүдийн энкодинг
+  field_scm_path_encoding: Path encoding
+  text_scm_path_encoding_note: "Default: UTF-8"
+  field_path_to_repository: Path to repository
+  field_root_directory: Root directory
+  field_cvs_module: Module
+  field_cvsroot: CVSROOT
+  text_mercurial_repository_note: Local repository (e.g. /hgrepo, c:\hgrepo)
+  text_scm_command: Command
+  text_scm_command_version: Version
+  label_git_report_last_commit: Report last commit for files and directories
+  text_scm_config: You can configure your scm commands in config/configuration.yml. Please restart the application after editing it.
+  text_scm_command_not_available: Scm command is not available. Please check settings on the administration panel.
+  notice_issue_successful_create: Issue %{id} created.
+  label_between: between
+  setting_issue_group_assignment: Allow issue assignment to groups
+  label_diff: diff
+  text_git_repository_note: Repository is bare and local (e.g. /gitrepo, c:\gitrepo)
+  description_query_sort_criteria_direction: Sort direction
+  description_project_scope: Search scope
+  description_filter: Filter
+  description_user_mail_notification: Mail notification settings
+  description_date_from: Enter start date
+  description_message_content: Message content
+  description_available_columns: Available Columns
+  description_date_range_interval: Choose range by selecting start and end date
+  description_issue_category_reassign: Choose issue category
+  description_search: Searchfield
+  description_notes: Notes
+  description_date_range_list: Choose range from list
+  description_choose_project: Projects
+  description_date_to: Enter end date
+  description_query_sort_criteria_attribute: Sort attribute
+  description_wiki_subpages_reassign: Choose new parent page
+  description_selected_columns: Selected Columns
+  label_parent_revision: Parent
+  label_child_revision: Child
+  error_scm_annotate_big_text_file: The entry cannot be annotated, as it exceeds the maximum text file size.
+  setting_default_issue_start_date_to_creation_date: Use current date as start date for new issues
+  button_edit_section: Edit this section
+  setting_repositories_encodings: Attachments and repositories encodings
+  description_all_columns: All Columns
+  button_export: Export
+  label_export_options: "%{export_format} export options"
+  error_attachment_too_big: This file cannot be uploaded because it exceeds the maximum allowed file size (%{max_size})
+  notice_failed_to_save_time_entries: "Failed to save %{count} time entrie(s) on %{total} selected: %{ids}."
+  label_x_issues:
+    zero:  0 Асуудал
+    one:   1 Асуудал
+    other: "%{count} Асуудлууд"
+  label_repository_new: New repository
+  field_repository_is_default: Main repository
+  label_copy_attachments: Copy attachments
+  label_item_position: "%{position}/%{count}"
+  label_completed_versions: Completed versions
+  text_project_identifier_info: Only lower case letters (a-z), numbers, dashes and underscores are allowed.<br />Once saved, the identifier cannot be changed.
+  field_multiple: Multiple values
+  setting_commit_cross_project_ref: Allow issues of all the other projects to be referenced and fixed
+  text_issue_conflict_resolution_add_notes: Add my notes and discard my other changes
+  text_issue_conflict_resolution_overwrite: Apply my changes anyway (previous notes will be kept but some changes may be overwritten)
+  notice_issue_update_conflict: The issue has been updated by an other user while you were editing it.
+  text_issue_conflict_resolution_cancel: Discard all my changes and redisplay %{link}
+  permission_manage_related_issues: Manage related issues
+  field_auth_source_ldap_filter: LDAP filter
+  label_search_for_watchers: Search for watchers to add
+  notice_account_deleted: Your account has been permanently deleted.
+  setting_unsubscribe: Allow users to delete their own account
+  button_delete_my_account: Delete my account
+  text_account_destroy_confirmation: |-
+    Are you sure you want to proceed?
+    Your account will be permanently deleted, with no way to reactivate it.
+  error_session_expired: Your session has expired. Please login again.
+  text_session_expiration_settings: "Warning: changing these settings may expire the current sessions including yours."
+  setting_session_lifetime: Session maximum lifetime
+  setting_session_timeout: Session inactivity timeout
+  label_session_expiration: Session expiration
+  permission_close_project: Close / reopen the project
+  label_show_closed_projects: View closed projects
+  button_close: Close
+  button_reopen: Reopen
+  project_status_active: active
+  project_status_closed: closed
+  project_status_archived: archived
+  text_project_closed: This project is closed and read-only.
+  notice_user_successful_create: User %{id} created.
+  field_core_fields: Standard fields
+  field_timeout: Timeout (in seconds)
+  setting_thumbnails_enabled: Display attachment thumbnails
+  setting_thumbnails_size: Thumbnails size (in pixels)
+  label_status_transitions: Status transitions
+  label_fields_permissions: Fields permissions
+  label_readonly: Read-only
+  label_required: Required
+  text_repository_identifier_info: Only lower case letters (a-z), numbers, dashes and underscores are allowed.<br />Once saved, the identifier cannot be changed.
+  field_board_parent: Parent forum
+  label_attribute_of_project: Project's %{name}
+  label_attribute_of_author: Author's %{name}
+  label_attribute_of_assigned_to: Assignee's %{name}
+  label_attribute_of_fixed_version: Target version's %{name}
+  label_copy_subtasks: Copy subtasks
+  label_copied_to: copied to
+  label_copied_from: copied from
+  label_any_issues_in_project: any issues in project
+  label_any_issues_not_in_project: any issues not in project
+  field_private_notes: Private notes
+  permission_view_private_notes: View private notes
+  permission_set_notes_private: Set notes as private
+  label_no_issues_in_project: no issues in project
+  label_any: бүгд
+  label_last_n_weeks: last %{count} weeks
+  setting_cross_project_subtasks: Allow cross-project subtasks
+  label_cross_project_descendants: With subprojects
+  label_cross_project_tree: With project tree
+  label_cross_project_hierarchy: With project hierarchy
+  label_cross_project_system: With all projects
+  button_hide: Hide
+  setting_non_working_week_days: Non-working days
+  label_in_the_next_days: in the next
+  label_in_the_past_days: in the past
+  label_attribute_of_user: User's %{name}
