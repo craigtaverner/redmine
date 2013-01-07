@@ -4,7 +4,7 @@ namespace :redmine do
   task :load_default_data => :environment do
     include Redmine::I18n
     set_language_if_valid('en')
-    
+
     envlang = ENV['REDMINE_LANG']
     if !envlang || !set_language_if_valid(envlang)
       puts
@@ -21,14 +21,14 @@ namespace :redmine do
       STDOUT.flush
       puts "===================================="
     end
-    
+
     begin
       Redmine::DefaultData::Loader.load(current_language)
       puts "Default configuration data loaded."
     rescue Redmine::DefaultData::DataAlreadyLoaded => error
-      puts error
+      puts error.message
     rescue => error
-      puts "Error: " + error
+      puts "Error: " + error.message
       puts "Default configuration data was not loaded."
     end
   end

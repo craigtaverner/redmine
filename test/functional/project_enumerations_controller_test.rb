@@ -1,8 +1,37 @@
+# Redmine - project management software
+# Copyright (C) 2006-2012  Jean-Philippe Lang
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 require File.expand_path('../../test_helper', __FILE__)
 
 class ProjectEnumerationsControllerTest < ActionController::TestCase
-  fixtures :all
-  
+  fixtures :projects, :trackers, :issue_statuses, :issues,
+           :enumerations, :users, :issue_categories,
+           :projects_trackers,
+           :roles,
+           :member_roles,
+           :members,
+           :enabled_modules,
+           :workflows,
+           :custom_fields, :custom_fields_projects,
+           :custom_fields_trackers, :custom_values,
+           :time_entries
+
+  self.use_transactional_fixtures = false
+
   def setup
     @request.session[:user_id] = nil
     Setting.default_language = 'en'
@@ -63,20 +92,20 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
 
     project_activity = TimeEntryActivity.new({
                                                :name => 'Project Specific',
-                                               :parent => TimeEntryActivity.find(:first),
+                                               :parent => TimeEntryActivity.first,
                                                :project => Project.find(1),
                                                :active => true
                                              })
     assert project_activity.save
     project_activity_two = TimeEntryActivity.new({
                                                    :name => 'Project Specific Two',
-                                                   :parent => TimeEntryActivity.find(:last),
+                                                   :parent => TimeEntryActivity.last,
                                                    :project => Project.find(1),
                                                    :active => true
                                                  })
     assert project_activity_two.save
 
-    
+
     put :update, :project_id => 1, :enumerations => {
       project_activity.id => {"custom_field_values"=>{"7" => "1"}, "active"=>"0"}, # De-activate
       project_activity_two.id => {"custom_field_values"=>{"7" => "1"}, "active"=>"0"} # De-activate
@@ -102,7 +131,7 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
 
   def test_update_when_creating_new_activities_will_convert_existing_data
     assert_equal 3, TimeEntry.find_all_by_activity_id_and_project_id(9, 1).size
-    
+
     @request.session[:user_id] = 2 # manager
     put :update, :project_id => 1, :enumerations => {
       "9"=> {"parent_id"=>"9", "custom_field_values"=>{"7" => "1"}, "active"=>"0"} # Design, De-activate
@@ -126,7 +155,7 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
 
     assert_equal 3, TimeEntry.find_all_by_activity_id_and_project_id(9, 1).size
     assert_equal 1, TimeEntry.find_all_by_activity_id_and_project_id(10, 1).size
-    
+
     @request.session[:user_id] = 2 # manager
     put :update, :project_id => 1, :enumerations => {
       "9"=> {"parent_id"=>"9", "custom_field_values"=>{"7" => "1"}, "active"=>"0"}, # Design
@@ -144,14 +173,14 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
     @request.session[:user_id] = 2 # manager
     project_activity = TimeEntryActivity.new({
                                                :name => 'Project Specific',
-                                               :parent => TimeEntryActivity.find(:first),
+                                               :parent => TimeEntryActivity.first,
                                                :project => Project.find(1),
                                                :active => true
                                              })
     assert project_activity.save
     project_activity_two = TimeEntryActivity.new({
                                                    :name => 'Project Specific Two',
-                                                   :parent => TimeEntryActivity.find(:last),
+                                                   :parent => TimeEntryActivity.last,
                                                    :project => Project.find(1),
                                                    :active => true
                                                  })
@@ -164,7 +193,7 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
     assert_nil TimeEntryActivity.find_by_id(project_activity.id)
     assert_nil TimeEntryActivity.find_by_id(project_activity_two.id)
   end
-  
+
   def test_destroy_should_reassign_time_entries_back_to_the_system_activity
     @request.session[:user_id] = 2 # manager
     project_activity = TimeEntryActivity.new({
@@ -176,7 +205,7 @@ class ProjectEnumerationsControllerTest < ActionController::TestCase
     assert project_activity.save
     assert TimeEntry.update_all("activity_id = '#{project_activity.id}'", ["project_id = ? AND activity_id = ?", 1, 9])
     assert_equal 3, TimeEntry.find_all_by_activity_id_and_project_id(project_activity.id, 1).size
-    
+
     delete :destroy, :project_id => 1
     assert_response :redirect
     assert_redirected_to '/projects/ecookbook/settings/activities'

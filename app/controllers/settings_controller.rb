@@ -1,5 +1,5 @@
-# redMine - project management software
-# Copyright (C) 2006-2007  Jean-Philippe Lang
+# Redmine - project management software
+# Copyright (C) 2006-2012  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,7 +17,8 @@
 
 class SettingsController < ApplicationController
   layout 'admin'
-  
+  menu_item :plugins, :only => :plugin
+
   before_filter :require_admin
 
   def index
@@ -35,28 +36,30 @@ class SettingsController < ApplicationController
         Setting[name] = value
       end
       flash[:notice] = l(:notice_successful_update)
-      redirect_to :action => 'edit', :tab => params[:tab]
-      return
-    end
-    @options = {}
-    @options[:user_format] = User::USER_FORMATS.keys.collect {|f| [User.current.name(f), f.to_s] }
-    @deliveries = ActionMailer::Base.perform_deliveries
+      redirect_to settings_path(:tab => params[:tab])
+    else
+      @options = {}
+      user_format = User::USER_FORMATS.collect{|key, value| [key, value[:setting_order]]}.sort{|a, b| a[1] <=> b[1]}
+      @options[:user_format] = user_format.collect{|f| [User.current.name(f[0]), f[0].to_s]}
+      @deliveries = ActionMailer::Base.perform_deliveries
 
-    @guessed_host_and_path = request.host_with_port.dup
-    @guessed_host_and_path << ('/'+ Redmine::Utils.relative_url_root.gsub(%r{^\/}, '')) unless Redmine::Utils.relative_url_root.blank?
-    
-    Redmine::Themes.rescan
+      @guessed_host_and_path = request.host_with_port.dup
+      @guessed_host_and_path << ('/'+ Redmine::Utils.relative_url_root.gsub(%r{^\/}, '')) unless Redmine::Utils.relative_url_root.blank?
+
+      Redmine::Themes.rescan
+    end
   end
 
   def plugin
     @plugin = Redmine::Plugin.find(params[:id])
     if request.post?
-      Setting["plugin_#{@plugin.id}"] = params[:settings]
+      Setting.send "plugin_#{@plugin.id}=", params[:settings]
       flash[:notice] = l(:notice_successful_update)
-      redirect_to :action => 'plugin', :id => @plugin.id
+      redirect_to plugin_settings_path(@plugin)
+    else
+      @partial = @plugin.settings[:partial]
+      @settings = Setting.send "plugin_#{@plugin.id}"
     end
-    @partial = @plugin.settings[:partial]
-    @settings = Setting["plugin_#{@plugin.id}"]
   rescue Redmine::PluginNotFound
     render_404
   end

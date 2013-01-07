@@ -1,16 +1,18 @@
+# encoding: utf-8
+#
 # Redmine - project management software
-# Copyright (C) 2006-2009  Jean-Philippe Lang
+# Copyright (C) 2006-2012  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -27,49 +29,57 @@ module SettingsHelper
             {:name => 'repositories', :partial => 'settings/repositories', :label => :label_repository_plural}
             ]
   end
-  
+
   def setting_select(setting, choices, options={})
     if blank_text = options.delete(:blank)
       choices = [[blank_text.is_a?(Symbol) ? l(blank_text) : blank_text, '']] + choices
     end
-    setting_label(setting, options) +
-      select_tag("settings[#{setting}]", options_for_select(choices, Setting.send(setting).to_s), options)
+    setting_label(setting, options).html_safe +
+      select_tag("settings[#{setting}]",
+                 options_for_select(choices, Setting.send(setting).to_s),
+                 options).html_safe
   end
-  
+
   def setting_multiselect(setting, choices, options={})
     setting_values = Setting.send(setting)
     setting_values = [] unless setting_values.is_a?(Array)
-      
-    setting_label(setting, options) +
-      hidden_field_tag("settings[#{setting}][]", '') +
+
+    content_tag("label", l(options[:label] || "setting_#{setting}")) +
+      hidden_field_tag("settings[#{setting}][]", '').html_safe +
       choices.collect do |choice|
-        text, value = (choice.is_a?(Array) ? choice : [choice, choice]) 
-        content_tag('label',
-          check_box_tag("settings[#{setting}][]", value, Setting.send(setting).include?(value)) + text.to_s,
-          :class => 'block'
-        )
-      end.join
+        text, value = (choice.is_a?(Array) ? choice : [choice, choice])
+        content_tag(
+          'label',
+          check_box_tag(
+             "settings[#{setting}][]",
+             value,
+             Setting.send(setting).include?(value),
+             :id => nil
+           ) + text.to_s,
+          :class => (options[:inline] ? 'inline' : 'block')
+         )
+      end.join.html_safe
   end
-  
+
   def setting_text_field(setting, options={})
-    setting_label(setting, options) +
-      text_field_tag("settings[#{setting}]", Setting.send(setting), options)
+    setting_label(setting, options).html_safe +
+      text_field_tag("settings[#{setting}]", Setting.send(setting), options).html_safe
   end
-  
+
   def setting_text_area(setting, options={})
-    setting_label(setting, options) +
-      text_area_tag("settings[#{setting}]", Setting.send(setting), options)
+    setting_label(setting, options).html_safe +
+      text_area_tag("settings[#{setting}]", Setting.send(setting), options).html_safe
   end
-  
+
   def setting_check_box(setting, options={})
-    setting_label(setting, options) +
-      hidden_field_tag("settings[#{setting}]", 0) +
-      check_box_tag("settings[#{setting}]", 1, Setting.send("#{setting}?"), options)
+    setting_label(setting, options).html_safe +
+      hidden_field_tag("settings[#{setting}]", 0, :id => nil).html_safe +
+        check_box_tag("settings[#{setting}]", 1, Setting.send("#{setting}?"), options).html_safe
   end
-  
+
   def setting_label(setting, options={})
     label = options.delete(:label)
-    label != false ? content_tag("label", l(label || "setting_#{setting}")) : ''
+    label != false ? label_tag("settings_#{setting}", l(label || "setting_#{setting}")).html_safe : ''
   end
 
   # Renders a notification field for a Redmine::Notifiable option
@@ -77,8 +87,20 @@ module SettingsHelper
     return content_tag(:label,
                        check_box_tag('settings[notified_events][]',
                                      notifiable.name,
-                                     Setting.notified_events.include?(notifiable.name)) +
-                         l_or_humanize(notifiable.name, :prefix => 'label_'),
-                       :class => notifiable.parent.present? ? "parent" : '')
+                                     Setting.notified_events.include?(notifiable.name), :id => nil).html_safe +
+                         l_or_humanize(notifiable.name, :prefix => 'label_').html_safe,
+                       :class => notifiable.parent.present? ? "parent" : '').html_safe
+  end
+
+  def cross_project_subtasks_options
+    options = [
+      [:label_disabled, ''],
+      [:label_cross_project_system, 'system'],
+      [:label_cross_project_tree, 'tree'],
+      [:label_cross_project_hierarchy, 'hierarchy'],
+      [:label_cross_project_descendants, 'descendants']
+    ]
+
+    options.map {|label, value| [l(label), value.to_s]}
   end
 end
